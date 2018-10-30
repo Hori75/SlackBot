@@ -58,6 +58,30 @@ def parse_join(message):
         xx = requests.post("https://slack.com/api/chat.postMessage", data=data)
         logging.debug('\033[91m' + "HELLO SENT TO " + m["user"]["id"] + '\033[0m')
 
+def TellOnline():
+    ADMIN = os.environ['BOT_ADMIN']
+    x = requests.get("https://slack.com/api/im.open?token="+TOKEN+"&user="+ADMIN)
+    x = x.json()
+    x = x["channel"]["id"]
+    logging.debug(x)
+
+    data = {
+            'token': TOKEN,
+            'channel': x,
+            'text': "I'm online and I'm good!",
+            'parse': 'full',
+            'as_user': 'true',
+           }
+
+    logging.debug(data)
+
+    if (UNFURL.lower() == "false"):
+        data = data.update({'unfurl_link': 'false'})
+
+    xx = requests.post("https://slack.com/api/chat.postMessage", data=data)
+    logging.debug("BOT ONLINE!")
+
+
 #Connects to Slacks and initiates socket handshake
 def start_rtm():
     r = requests.get("https://slack.com/api/rtm.start?token="+TOKEN, verify=False)
@@ -77,6 +101,7 @@ def on_close(ws):
 
 def on_open(ws):
     logging.info("Connection Started - Auto Greeting new joiners to the network")
+    TellOnline()
 
 
 if __name__ == "__main__":
